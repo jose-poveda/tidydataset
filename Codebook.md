@@ -163,58 +163,6 @@ The tidy data set was processed based in the information given in the pre
     
     +"WALKING_UPSTAIRS"
     
-  *Domain: Variable that determines whether it's measured for a period of time, or using a Fast Fourier Transform. Integer.
-  
-    1. Time
-    
-    2. Frequency
-    
-    + The mean is numeric. Value is Time if [1, 1.5], and Frequency if [1.5, 2]
-    
-  *Acceleration: Variable that determines which acceleration is measured. Integer.
-  
-    1. Body
-    
-    2. Gravity
-    
-    + The mean is numeric. Value is Body if [1, 1.5], and Gravity if [1.5, 2]
-    
-  *Device: Variable that determines which device was used for measuring. Integer.
-  
-    1. Accelerometer
-    
-    2. Gyroscope
-    
-    + The mean is numeric. Value is Accelerometer if [1, 1.5], and Gyroscope if [1.5, 2]
-    
-  *Jerk: Variable that determines if Jerk was computed. Integer.
-  
-    0. No
-    
-    1. Yes
-    
-    + The mean is numeric. Value is No if [0, 0.5], and Yes if [0.5, 1]
-    
-  *Axis: Variable that determines the axis measured. Integer.
-  
-    1. X
-    
-    2. Y
-    
-    3. Z
-    
-    4. Magnitude, `sqrt(x^2+y^2+z^2)`
-    
-    + The mean is numeric. Value is X if [1, 1.75], Y if [1.75, 2.5], Z if [2.5, 3.25] and Magnitude if [3.25, 4]
-    
-  *Statistic: Variable that determines which statistic was computed. Integer.
-  
-    1. Mean
-    
-    2. Standard Deviation
-    
-    + The mean is numeric. Value is Mean if [1, 1.5], and Standard Deviation if [1.5, 2]
-    
   *Measure: The values that were measured for each set of original variables. Numeric.
 
 ###Transformation from raw to tidy data
@@ -275,19 +223,17 @@ fBodyGyroMag-mean(), fBodyGyroMag-std()
 
 fBodyGyroJerkMag-mean(), fBodyGyroJerkMag-std()
 
-Each of these variables is formed by a combination of 4 to 6 tidy data variables, 
+Each of these variables is formed by a combination of 4 to 6 variables, 
 
 `Variable = Domain.Acceleration.Device.Jerk.Axis.Statistic`
 
-The values that each tidy data variable can handle were mentioned before.
 If the pre-processed variables weren't in this way, it had to be manipulated so 
 it appears in this way. For example:
 
 `tBodyAcc-mean()-X` is changed to `t.Body.Accelerometer.No.X.mean` so it includes 
-all 6 tidy data variables. Then again, it needs to be modified to only the values
-that form it, to `1.1.1.0.1.1`. This was done to all the variables. This 6 
-variables were transformed from character to integer to better apply the mean
-at the end of the program.
+values dor the variables. Something important about this is the fact that this 6
+values don't appear in the final tidy data set, so they're just relevant to
+accomplish the tiding of the data.
 
 Next, the tidy data variables were gathered and then separated with tidyr, so
 each variable was assigned a column. Finally, by using `melt` and `dcast` the 

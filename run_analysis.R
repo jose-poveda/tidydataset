@@ -15,18 +15,15 @@ subject <- rbind(subjecttrain, subjecttest)
 names(subject) <- "SubjectID"
 activitytrain <- read.table("./UCI HAR Dataset/train/y_train.txt", sep = "")
 activitytest <- read.table("./UCI HAR Dataset/test/y_test.txt", sep = "")
-activity <- rbind(activitytrain, activitytest)
+activity <- rbind(actsubjactvitytrain, activitytest)
 names(activity) <- "Activities"
 #Binding Activities and ID's together
 subjact <- cbind(subject, activity)
 #Using names easier to search for
 labels <- read.table("./UCI HAR Dataset/activity_labels.txt", stringsAsFactors = FALSE)
-subjact$Activities <- gsub("1", labels[1, 2], subjact$Activities)
-subjact$Activities <- gsub("2", labels[2, 2], subjact$Activities)
-subjact$Activities <- gsub("3", labels[3, 2], subjact$Activities)
-subjact$Activities <- gsub("4", labels[4, 2], subjact$Activities)
-subjact$Activities <- gsub("5", labels[5, 2], subjact$Activities)
-subjact$Activities <- gsub("6", labels[6, 2], subjact$Activities)
+names(labels)[1] <- "Activities"
+subjact <- inner_join(subjact, labels, by = 'Activities')
+subjact <- select(subjact, c(1, 3))
 suball <- cbind(subjact, suball)
 #Now it's time to change the variable names with easier to identify names.
 names(suball) <- gsub("\\(\\)", "", names(suball))
@@ -69,27 +66,14 @@ names(subtidy) <- gsub("r_Z", "r_No_Z", names(subtidy))
 names(subtidy) <- gsub("e_Ma", "e_No_Ma", names(subtidy))
 names(subtidy) <- gsub("r_Ma", "r_No_Ma", names(subtidy))
 names(subtidy) <- gsub("Jerk", "Yes", names(subtidy))
-subtidynum <- subtidy
-names(subtidynum) <- gsub("No", "0", names(subtidynum))
-names(subtidynum) <- gsub("Yes|Time|Accelerometer|X|Mean|Body", "1", names(subtidynum))
-names(subtidynum) <- gsub("Frequency|Gyroscope|Y|Standarddeviation|Gravity", "2", names(subtidynum))
-names(subtidynum) <- gsub("Z", "3", names(subtidynum))
-names(subtidynum) <- gsub("Magnitude", "4", names(subtidynum))
 #Making sure there are 6 variables in the names, first two don't need to have "_"
 grep("(.*\\_){5}", names(subtidynum))
 #Using tidyr to put variables as columns
-subtidynum <- gather(subtidynum, domain, Measure, -SubjectID, -Activities)
-subtidynum <- separate(subtidynum, domain, c("Domain", "Acceleration", "Device", "Jerk", "Axis", "Statistic"))
-#Making sure numbers are integers so we're able to find the mean
-subtidynum$Domain <- as.integer(subtidynum$Domain)
-subtidynum$Acceleration <- as.integer(subtidynum$Acceleration)
-subtidynum$Device <- as.integer(subtidynum$Device)
-subtidynum$Jerk <- as.integer(subtidynum$Jerk)
-subtidynum$Axis <- as.integer(subtidynum$Axis)
-subtidynum$Statistic <- as.integer(subtidynum$Statistic)
+subtidy <- gather(subtidynum, domain, Measure, -SubjectID, -Activities)
+subtidy <- separate(subtidynum, domain, c("Domain", "Acceleration", "Device", "Jerk", "Axis", "Statistic"))
 #Summarizing the info doing reshaping.
 library(reshape2)
-meltsubtidynum <- melt(subtidynum, id.vars = c("SubjectID", "Activities"), na.rm = TRUE)
-sumtidynum <- dcast(meltsubtidynum, SubjectID + Activities ~ variable, mean)
+meltsubtidy <- melt(subtidy, id.vars = c("SubjectID", "Activities"), measure.vars = "Measure", na.rm = TRUE)
+sumtidy <- dcast(meltsubtidy, SubjectID + Activities ~ variable, mean)
 #Now we have to write this table so everyone is able to read it
-write.table(sumtidynum, "tidy_data.txt", row.names = FALSE)
+write.table(sumtidy, "tidy_data.txt", row.names = FALSE)
